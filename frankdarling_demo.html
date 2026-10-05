@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Frank Darling Commerce</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#FAF9F7;--surface:#FFFFFF;--surface2:#F4F2EF;--border:#E8E3DB;
+  --text:#1C1A17;--text2:#6B6459;--text3:#A89F93;
+  --accent:#C8A96A;--accent2:#A88A52;--accent-bg:rgba(200,169,106,.1);
+  --red:#C0544A;--green:#4A8C6A;--blue:#3E6B9E;--yellow:#B8871F;
+  --sidebar:#1C1A17;--sidebar-text:#A89F93;--sidebar-active:#C8A96A;
+  --sidebar-active-bg:rgba(200,169,106,.12);
+  color-scheme:light;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141210;--surface:#1E1C19;--surface2:#262420;--border:#332F28;
+  --text:#F0EDE8;--text2:#A89F93;--text3:#5A534A;--sidebar:#100F0D;color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#141210;--surface:#1E1C19;--surface2:#262420;--border:#332F28;
+  --text:#F0EDE8;--text2:#A89F93;--text3:#5A534A;--sidebar:#100F0D;color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;font-size:14px;line-height:1.5}
+
+/* SIDEBAR */
+.sidebar{width:224px;background:var(--sidebar);flex-shrink:0;display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.06)}
+.logo-wordmark{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:#fff;letter-spacing:.02em}
+.logo-sub{font-size:10px;color:var(--sidebar-text);letter-spacing:.12em;text-transform:uppercase;margin-top:3px}
+.sidebar-section{padding:14px 12px 4px}
+.sidebar-section-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--sidebar-text);padding:0 8px;margin-bottom:5px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--sidebar-text);font-size:13px;font-weight:500;transition:all .15s;user-select:none}
+.nav-item:hover{background:rgba(255,255,255,.05);color:#fff}
+.nav-item.active{background:var(--sidebar-active-bg);color:var(--sidebar-active)}
+.nav-badge{margin-left:auto;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px}
+.nav-badge.red{background:var(--red);color:#fff}
+.nav-badge.gold{background:var(--accent);color:#1C1A17}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{height:56px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0}
+.topbar-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);letter-spacing:.01em}
+.topbar-sub{font-size:12px;color:var(--text3)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+
+.btn{padding:7px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px;transition:all .15s;font-family:'Inter',sans-serif}
+.btn-gold{background:var(--accent);color:#1C1A17}
+.btn-gold:hover{background:var(--accent2)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface2);color:var(--text)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-green{background:rgba(74,140,106,.12);color:var(--green);border:none}
+.btn-red{background:rgba(192,84,74,.12);color:var(--red);border:none}
+
+.content{flex:1;overflow-y:auto;padding:24px}
+.page{display:none}
+.page.active{display:block}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px}
+.kpi-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.kpi-value{font-size:26px;font-weight:700;color:var(--text);letter-spacing:-.5px;line-height:1;font-variant-numeric:tabular-nums;margin-bottom:6px}
+.kpi-delta{font-size:12px;font-weight:600}
+.up{color:var(--green)}.down{color:var(--red)}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:8px}
+.card-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:var(--text)}
+.card-sub{font-size:12px;color:var(--text3);margin-top:2px;font-family:'Inter',sans-serif}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px}
+
+/* CHIPS */
+.chip{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;letter-spacing:.03em;white-space:nowrap}
+.chip-green{background:rgba(74,140,106,.12);color:var(--green)}
+.chip-red{background:rgba(192,84,74,.12);color:var(--red)}
+.chip-yellow{background:rgba(184,135,31,.12);color:var(--yellow)}
+.chip-gold{background:rgba(200,169,106,.12);color:var(--accent)}
+.chip-blue{background:rgba(62,107,158,.12);color:var(--blue)}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+
+/* PROGRESS */
+.progress-bar{height:6px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.pf-gold{background:var(--accent)}
+.pf-green{background:var(--green)}
+.pf-red{background:var(--red)}
+.pf-blue{background:var(--blue)}
+
+/* CODE */
+.code-block{background:var(--sidebar);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:#C8BFB0;overflow-x:auto;white-space:pre}
+.kw{color:#C8A96A}.str{color:var(--green)}.cm{color:#4A433A}.fn{color:#7BAFD4}.num{color:#C8A96A}.ty{color:#B8A080}
+
+/* DIAMOND CARD */
+.diamond-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.diamond-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .15s;position:relative}
+.diamond-card:hover{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.diamond-card.reserved{opacity:.6}
+.diamond-card.selected{border-color:var(--accent);background:var(--accent-bg)}
+.diamond-emoji{font-size:24px;margin-bottom:8px}
+.diamond-id{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:4px}
+.diamond-name{font-weight:600;font-size:13px;color:var(--text);margin-bottom:2px}
+.diamond-price{font-size:15px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.diamond-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.diamond-status{position:absolute;top:10px;right:10px}
+
+/* ORDER TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:0}
+.timeline-item{display:flex;gap:14px;padding:12px 0;position:relative}
+.timeline-item:not(:last-child)::before{content:'';position:absolute;left:11px;top:32px;bottom:-2px;width:2px;background:var(--border)}
+.timeline-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:2px}
+.td-green{background:rgba(74,140,106,.15);color:var(--green)}
+.td-gold{background:rgba(200,169,106,.15);color:var(--accent)}
+.td-blue{background:rgba(62,107,158,.15);color:var(--blue)}
+.td-gray{background:var(--surface2);color:var(--text3)}
+.timeline-content{flex:1}
+.timeline-title{font-size:13px;font-weight:600;color:var(--text)}
+.timeline-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.timeline-time{font-size:11px;color:var(--text3);white-space:nowrap;margin-left:auto}
+
+/* ALERT */
+.alert-banner{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:13px;font-weight:500}
+.alert-warn{background:rgba(184,135,31,.1);border:1px solid rgba(184,135,31,.25);color:var(--yellow)}
+.alert-info{background:rgba(62,107,158,.08);border:1px solid rgba(62,107,158,.2);color:var(--blue)}
+.alert-green{background:rgba(74,140,106,.08);border:1px solid rgba(74,140,106,.2);color:var(--green)}
+
+/* LOCK ICON / IDEMPOTENT BADGE */
+.idem-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:var(--accent-bg);color:var(--accent)}
+
+/* RESERVATION TIMER */
+.timer-ring{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--accent)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.hidden{display:none}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;width:540px;max-width:100%;max-height:80vh;overflow-y:auto}
+.modal-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;margin-bottom:16px}
+.form-row{margin-bottom:14px}
+.form-label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block}
+input[type=text],select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);width:100%}
+textarea{resize:vertical;min-height:80px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:var(--bg);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* LIST ROW */
+.list-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.list-row:last-child{border-bottom:none}
+
+canvas{display:block}
+
+/* MIGRATION TRACK */
+.migration-track{display:flex;gap:0;margin:12px 0}
+.mig-phase{flex:1;padding:12px 10px;text-align:center;border:1px solid var(--border);background:var(--surface2);position:relative}
+.mig-phase:first-child{border-radius:8px 0 0 8px}
+.mig-phase:last-child{border-radius:0 8px 8px 0}
+.mig-phase.done{background:rgba(74,140,106,.07);border-color:rgba(74,140,106,.3)}
+.mig-phase.active{background:var(--accent-bg);border-color:rgba(200,169,106,.5)}
+.mig-phase.pending{opacity:.5}
+.mig-phase-num{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px}
+.mig-phase-name{font-size:12px;font-weight:600;color:var(--text)}
+.mig-phase-status{font-size:10px;margin-top:3px}
+.mig-phase-status.done{color:var(--green)}
+.mig-phase-status.active{color:var(--accent)}
+.mig-phase-status.pending{color:var(--text3)}
+
+@media(max-width:800px){
+  .sidebar{width:54px}
+  .logo-wordmark,.logo-sub,.nav-item span,.sidebar-section-label,.nav-badge{display:none}
+  .nav-item{justify-content:center;padding:10px}
+  .kpi-row,.two-col,.three-col,.diamond-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-wordmark">Frank Darling</div>
+    <div class="logo-sub">Commerce Platform</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Operations</div>
+    <div class="nav-item active" data-page="dashboard">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor" opacity=".7"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor" opacity=".5"/></svg>
+      <span>Dashboard</span>
+    </div>
+    <div class="nav-item" data-page="orders">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 2h10l1 3H2L3 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M2 5v9h12V5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M6 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span>Orders</span>
+      <span class="nav-badge gold">8</span>
+    </div>
+    <div class="nav-item" data-page="diamonds">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2l4 4-4 9-4-9 4-4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M4 6h8" stroke="currentColor" stroke-width="1.5"/></svg>
+      <span>Diamond Catalog</span>
+    </div>
+    <div class="nav-item" data-page="payments">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M1 7h14" stroke="currentColor" stroke-width="1.5"/><path d="M4 10.5h2M9 10.5h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span>Payments</span>
+      <span class="nav-badge red">2</span>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Catalog</div>
+    <div class="nav-item" data-page="inventory">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M9 11.5h5M11.5 9v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span>Inventory</span>
+    </div>
+    <div class="nav-item" data-page="showroom">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13V6l5-4 5 4v7H3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><rect x="6" y="9" width="4" height="4" rx=".5" stroke="currentColor" stroke-width="1.3"/></svg>
+      <span>Showroom</span>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Platform</div>
+    <div class="nav-item" data-page="migration">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M10 5l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 3v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".4"/></svg>
+      <span>Shopify Migration</span>
+    </div>
+    <div class="nav-item" data-page="monitoring">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 10l3-4 3 2 3-5 3 3 2-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Monitoring</span>
+    </div>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="page-title">Operations Overview</div>
+      <div class="topbar-sub" id="page-sub">US Eastern · Production</div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-ghost" id="quote-btn">+ Custom Quote</button>
+      <button class="btn btn-gold" id="order-btn">New Order</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-label">GMV Today</div>
+          <div class="kpi-value">$84,200</div>
+          <div class="kpi-delta up">↑ $12k vs yesterday</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Active Orders</div>
+          <div class="kpi-value" id="kpi-orders">38</div>
+          <div class="kpi-delta up">8 awaiting deposit</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Diamonds Reserved</div>
+          <div class="kpi-value">14</div>
+          <div class="kpi-delta" style="color:var(--text3)">3 expiring &lt; 24h</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Payment Failures</div>
+          <div class="kpi-value" style="color:var(--red)">2</div>
+          <div class="kpi-delta down">Stripe retry queued</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Order Volume</div><div class="card-sub">Last 14 days</div></div></div>
+          <canvas id="gmv-chart" height="130"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Order Lifecycle</div><div class="card-sub">Current pipeline</div></div></div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Deposit Pending</span><span>8</span></div><div class="progress-bar"><div class="progress-fill pf-gold" style="width:28%"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>In Production</span><span>18</span></div><div class="progress-bar"><div class="progress-fill pf-blue" style="width:47%"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Quality Check</span><span>5</span></div><div class="progress-bar"><div class="progress-fill pf-green" style="width:13%"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Ready to Ship</span><span>4</span></div><div class="progress-bar"><div class="progress-fill pf-green" style="width:11%"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Balance Due</span><span>3</span></div><div class="progress-bar"><div class="progress-fill pf-red" style="width:8%"></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Recent Activity</div></div>
+          <div class="list-row"><div class="timeline-dot td-green" style="width:28px;height:28px">✓</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Balance payment collected</div><div style="font-size:12px;color:var(--text3)">FD-9041 · Sarah M. · $7,450</div></div><div style="font-size:11px;color:var(--text3)">4m ago</div></div>
+          <div class="list-row"><div class="timeline-dot td-gold" style="width:28px;height:28px">💎</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Diamond reserved</div><div style="font-size:12px;color:var(--text3)">VS1 1.82ct · GIA 5247812 · 24h hold</div></div><div style="font-size:11px;color:var(--text3)">12m ago</div></div>
+          <div class="list-row"><div class="timeline-dot td-blue" style="width:28px;height:28px">⟳</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Supplier feed synced</div><div style="font-size:12px;color:var(--text3)">Stuller · 284 stones updated</div></div><div style="font-size:11px;color:var(--text3)">1h ago</div></div>
+          <div class="list-row"><div class="timeline-dot td-red" style="width:28px;height:28px;background:rgba(192,84,74,.15);color:var(--red)">!</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Payment retry scheduled</div><div style="font-size:12px;color:var(--text3)">FD-8997 · Card declined → retry T+1h</div></div><div style="font-size:11px;color:var(--text3)">2h ago</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">Integration Health</div></div>
+          <div class="list-row"><div style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)"></div><div style="flex:1;font-size:13px;font-weight:500">Stripe Payments</div><div style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace">99.98%</div></div>
+          <div class="list-row"><div style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)"></div><div style="flex:1;font-size:13px;font-weight:500">Stuller Feed</div><div style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace">Synced 1h ago</div></div>
+          <div class="list-row"><div style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)"></div><div style="flex:1;font-size:13px;font-weight:500">QuickBooks</div><div style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace">Synced 3h ago</div></div>
+          <div class="list-row"><div style="width:8px;height:8px;border-radius:50%;background:var(--yellow);box-shadow:0 0 6px var(--yellow)"></div><div style="flex:1;font-size:13px;font-weight:500">FedEx Fulfillment</div><div style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace">Delayed 18m</div></div>
+          <div class="list-row"><div style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)"></div><div style="flex:1;font-size:13px;font-weight:500">Shopify Read (Legacy)</div><div style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace">Phase 3 live</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="page" id="page-orders">
+      <div class="alert-banner alert-warn">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:1px"><path d="M8 1L15 14H1L8 1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6v4M8 11.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span>FD-8997 payment failed — idempotent retry scheduled. FD-9003 diamond reservation expires in 6h — customer notified.</span>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Active Orders</div><div class="card-sub">Click row to view lifecycle</div></div></div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Order</th><th>Customer</th><th>Item</th><th>Deposit</th><th>Balance</th><th>Channel</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr data-order="FD-9041"><td style="font-family:'JetBrains Mono',monospace;font-size:12px">FD-9041</td><td>Sarah M.</td><td>Oval Solitaire · 1.82ct</td><td style="color:var(--green);font-variant-numeric:tabular-nums">$2,500 ✓</td><td style="font-variant-numeric:tabular-nums">$7,450</td><td><span class="chip chip-blue">Online</span></td><td><span class="chip chip-green">Shipped</span></td><td><button class="btn btn-ghost btn-sm view-order-btn" data-order="FD-9041">View</button></td></tr>
+              <tr data-order="FD-9039"><td style="font-family:'JetBrains Mono',monospace;font-size:12px">FD-9039</td><td>James K.</td><td>Round Pavé · 1.2ct</td><td style="color:var(--green);font-variant-numeric:tabular-nums">$2,000 ✓</td><td style="font-variant-numeric:tabular-nums">$5,800</td><td><span class="chip chip-gold">Showroom</span></td><td><span class="chip chip-blue">Production</span></td><td><button class="btn btn-ghost btn-sm view-order-btn" data-order="FD-9039">View</button></td></tr>
+              <tr data-order="FD-9035"><td style="font-family:'JetBrains Mono',monospace;font-size:12px">FD-9035</td><td>Priya N.</td><td>Emerald Halo · 1.5ct</td><td style="color:var(--accent);font-variant-numeric:tabular-nums">Pending</td><td style="font-variant-numeric:tabular-nums">$8,200</td><td><span class="chip chip-blue">Online</span></td><td><span class="chip chip-yellow">Deposit Due</span></td><td><button class="btn btn-ghost btn-sm view-order-btn" data-order="FD-9035">View</button></td></tr>
+              <tr data-order="FD-9003"><td style="font-family:'JetBrains Mono',monospace;font-size:12px">FD-9003</td><td>Michael R.</td><td>Cushion 3-Stone · 2.1ct</td><td style="color:var(--green);font-variant-numeric:tabular-nums">$3,000 ✓</td><td style="font-variant-numeric:tabular-nums">$11,400</td><td><span class="chip chip-gold">Showroom</span></td><td><span class="chip chip-blue">Production</span></td><td><button class="btn btn-ghost btn-sm view-order-btn" data-order="FD-9003">View</button></td></tr>
+              <tr data-order="FD-8997"><td style="font-family:'JetBrains Mono',monospace;font-size:12px">FD-8997</td><td>Alicia T.</td><td>Round Solitaire · 0.9ct</td><td style="color:var(--red);font-variant-numeric:tabular-nums">Failed ✗</td><td style="font-variant-numeric:tabular-nums">$4,200</td><td><span class="chip chip-blue">Online</span></td><td><span class="chip chip-red">Payment Failed</span></td><td><button class="btn btn-ghost btn-sm view-order-btn" data-order="FD-8997">View</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" id="order-lifecycle-card" style="display:none">
+        <div class="card-header">
+          <div><div class="card-title" id="lifecycle-title">Order Lifecycle</div><div class="card-sub" id="lifecycle-sub"></div></div>
+          <button class="btn btn-ghost btn-sm" id="close-lifecycle">✕</button>
+        </div>
+        <div class="timeline" id="lifecycle-timeline"></div>
+      </div>
+    </div>
+
+    <!-- DIAMONDS -->
+    <div class="page" id="page-diamonds">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Diamond Catalog</div><div class="card-sub">Live feed · Stuller + GIA certified · real-time reservation</div></div>
+          <span class="chip chip-gold">247 in stock</span>
+        </div>
+        <div class="diamond-grid">
+          <div class="diamond-card" data-id="GIA-5247812">
+            <div class="diamond-status"><span class="chip chip-gold">Available</span></div>
+            <div class="diamond-emoji">💎</div>
+            <div class="diamond-id">GIA · 5247812</div>
+            <div class="diamond-name">Oval · 1.82ct · VS1 · F</div>
+            <div class="diamond-price">$9,400</div>
+            <div class="diamond-meta">Cut: Excellent · Polish: VG</div>
+            <div style="margin-top:10px;display:flex;gap:6px">
+              <button class="btn btn-gold btn-sm reserve-btn" data-id="GIA-5247812">Reserve</button>
+              <button class="btn btn-ghost btn-sm">Details</button>
+            </div>
+          </div>
+          <div class="diamond-card reserved" data-id="GIA-6120344">
+            <div class="diamond-status"><div class="timer-ring">⏱ <span class="countdown" data-mins="18">18:00</span></div></div>
+            <div class="diamond-emoji">💎</div>
+            <div class="diamond-id">GIA · 6120344</div>
+            <div class="diamond-name">Round · 1.2ct · VVS2 · G</div>
+            <div class="diamond-price">$6,200</div>
+            <div class="diamond-meta">Cut: Ideal · Polish: EX</div>
+            <div style="margin-top:10px"><span class="chip chip-yellow">Reserved — FD-9039</span></div>
+          </div>
+          <div class="diamond-card" data-id="GIA-7831290">
+            <div class="diamond-status"><span class="chip chip-green">Available</span></div>
+            <div class="diamond-emoji">💎</div>
+            <div class="diamond-id">GIA · 7831290</div>
+            <div class="diamond-name">Cushion · 2.1ct · SI1 · H</div>
+            <div class="diamond-price">$10,800</div>
+            <div class="diamond-meta">Cut: Very Good · Polish: EX</div>
+            <div style="margin-top:10px;display:flex;gap:6px">
+              <button class="btn btn-gold btn-sm reserve-btn" data-id="GIA-7831290">Reserve</button>
+              <button class="btn btn-ghost btn-sm">Details</button>
+            </div>
+          </div>
+          <div class="diamond-card" data-id="GIA-4490821">
+            <div class="diamond-status"><span class="chip chip-green">Available</span></div>
+            <div class="diamond-emoji">💎</div>
+            <div class="diamond-id">GIA · 4490821</div>
+            <div class="diamond-name">Emerald · 1.5ct · VVS1 · E</div>
+            <div class="diamond-price">$12,100</div>
+            <div class="diamond-meta">Cut: Very Good · Polish: EX</div>
+            <div style="margin-top:10px;display:flex;gap:6px">
+              <button class="btn btn-gold btn-sm reserve-btn" data-id="GIA-4490821">Reserve</button>
+              <button class="btn btn-ghost btn-sm">Details</button>
+            </div>
+          </div>
+          <div class="diamond-card reserved" data-id="GIA-3318840">
+            <div class="diamond-status"><div class="timer-ring">⏱ <span class="countdown" data-mins="6">06:00</span></div></div>
+            <div class="diamond-emoji">💎</div>
+            <div class="diamond-id">GIA · 3318840</div>
+            <div class="diamond-name">Pear · 1.7ct · VS2 · F</div>
+            <div class="diamond-price">$8,700</div>
+            <div class="diamond-meta">Cut: Excellent · Polish: VG</div>
+            <div style="margin-top:10px"><span class="chip chip-red">Expiring · FD-9003</span></div>
+          </div>
+          <div class="diamond-card" data-id="GIA-9012774">
+            <div class="diamond-status"><span class="chip chip-green">Available</span></div>
+            <div class="diamond-emoji">💎</div>
+            <div class="diamond-id">GIA · 9012774</div>
+            <div class="diamond-name">Round · 0.9ct · VVS2 · D</div>
+            <div class="diamond-price">$4,600</div>
+            <div class="diamond-meta">Cut: Ideal · Polish: EX</div>
+            <div style="margin-top:10px;display:flex;gap:6px">
+              <button class="btn btn-gold btn-sm reserve-btn" data-id="GIA-9012774">Reserve</button>
+              <button class="btn btn-ghost btn-sm">Details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Reservation Engine</div><div class="card-sub">Idempotent lock · 24h TTL · auto-release on expiry</div></div><span class="idem-badge">🔒 Idempotent</span></div>
+        <div class="code-block"><span class="cm">// ReservationService.cs — optimistic lock + idempotency key</span>
+
+<span class="kw">public async</span> Task&lt;<span class="ty">ReservationResult</span>&gt; <span class="fn">ReserveAsync</span>(
+  <span class="ty">Guid</span> diamondId, <span class="ty">Guid</span> orderId, <span class="ty">string</span> idempotencyKey
+) {
+  <span class="kw">return await</span> _db.<span class="fn">ExecuteInTransactionAsync</span>(<span class="kw">async</span> tx =&gt; {
+    <span class="cm">// idempotency: return existing result if key seen</span>
+    <span class="kw">var</span> existing = <span class="kw">await</span> tx.<span class="fn">FindReservationByKey</span>(idempotencyKey);
+    <span class="kw">if</span> (existing != <span class="kw">null</span>) <span class="kw">return</span> existing;
+
+    <span class="cm">// SELECT FOR UPDATE — row-level lock</span>
+    <span class="kw">var</span> diamond = <span class="kw">await</span> tx.<span class="fn">LockDiamondRow</span>(diamondId);
+    <span class="kw">if</span> (diamond.Status != <span class="str">DiamondStatus.Available</span>)
+      <span class="kw">throw new</span> <span class="ty">ConflictException</span>(<span class="str">"Already reserved"</span>);
+
+    diamond.Status = <span class="str">DiamondStatus.Reserved</span>;
+    diamond.ReservedForOrder = orderId;
+    diamond.ExpiresAt = <span class="ty">DateTime</span>.UtcNow.AddHours(<span class="num">24</span>);
+
+    <span class="kw">await</span> tx.<span class="fn">SaveIdempotencyKey</span>(idempotencyKey, result);
+    <span class="kw">return</span> <span class="ty">ReservationResult</span>.<span class="fn">Success</span>(diamond);
+  });
+}</span></div>
+      </div>
+    </div>
+
+    <!-- PAYMENTS -->
+    <div class="page" id="page-payments">
+      <div class="three-col" style="margin-bottom:20px">
+        <div class="kpi-card">
+          <div class="kpi-label">Collected Today</div>
+          <div class="kpi-value">$42,800</div>
+          <div class="kpi-delta up">↑ 8 transactions</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Pending Balance</div>
+          <div class="kpi-value">$31,050</div>
+          <div class="kpi-delta" style="color:var(--text3)">5 orders</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Refunds MTD</div>
+          <div class="kpi-value">$2,200</div>
+          <div class="kpi-delta" style="color:var(--text3)">1 order · FD-8881</div>
+        </div>
+      </div>
+
+      <div class="alert-banner alert-warn">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M8 1L15 14H1L8 1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6v4M8 11.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        FD-8997 deposit declined (Stripe: insufficient_funds). Exponential retry at T+1h, T+4h, T+24h. Customer emailed.
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Payment Ledger</div><div class="card-sub">Deposits · balances · refunds · reconciled with Stripe</div></div></div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Order</th><th>Type</th><th>Amount</th><th>Stripe ID</th><th>Attempt</th><th>Status</th><th>Reconciled</th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:'JetBrains Mono',monospace;font-size:12px">FD-9041</td><td>Balance</td><td style="font-variant-numeric:tabular-nums">$7,450</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3)">pi_3Pvx…4c2A</td><td>1 / 1</td><td><span class="chip chip-green">Captured</span></td><td><span class="chip chip-green">✓</span></td></tr>
+              <tr><td style="font-family:'JetBrains Mono',monospace;font-size:12px">FD-9039</td><td>Deposit</td><td style="font-variant-numeric:tabular-nums">$2,000</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3)">pi_3PvR…8mNB</td><td>1 / 1</td><td><span class="chip chip-green">Captured</span></td><td><span class="chip chip-green">✓</span></td></tr>
+              <tr><td style="font-family:'JetBrains Mono',monospace;font-size:12px">FD-8997</td><td>Deposit</td><td style="font-variant-numeric:tabular-nums">$1,500</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3)">pi_3PuK…2xQR</td><td>1 / 3</td><td><span class="chip chip-red">Failed — Retry</span></td><td><span class="chip chip-yellow">Pending</span></td></tr>
+              <tr><td style="font-family:'JetBrains Mono',monospace;font-size:12px">FD-8881</td><td>Refund</td><td style="font-variant-numeric:tabular-nums">($2,200)</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3)">re_3Pq8…9fLA</td><td>—</td><td><span class="chip chip-blue">Refunded</span></td><td><span class="chip chip-green">✓</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Payment Service · Idempotent Charge</div></div><span class="idem-badge">🔒 Safe Retry</span></div>
+        <div class="code-block"><span class="cm">// PaymentService.cs — idempotent capture with audit trail</span>
+
+<span class="kw">public async</span> Task&lt;<span class="ty">PaymentResult</span>&gt; <span class="fn">CaptureDepositAsync</span>(
+  <span class="ty">Guid</span> orderId, <span class="ty">decimal</span> amount, <span class="ty">string</span> stripeToken
+) {
+  <span class="kw">var</span> key = <span class="fn">$</span><span class="str">"deposit:{orderId}"</span>; <span class="cm">// idempotency key</span>
+  <span class="kw">try</span> {
+    <span class="kw">var</span> intent = <span class="kw">await</span> _stripe.<span class="fn">CreatePaymentIntentAsync</span>(<span class="kw">new</span> {
+      Amount = (<span class="ty">long</span>)(amount * <span class="num">100</span>),
+      Currency = <span class="str">"usd"</span>,
+      IdempotencyKey = key
+    });
+    <span class="kw">await</span> _auditLog.<span class="fn">RecordAsync</span>(orderId, <span class="str">"deposit_captured"</span>, intent.Id);
+    <span class="kw">return</span> <span class="ty">PaymentResult</span>.<span class="fn">Success</span>(intent);
+  } <span class="kw">catch</span> (<span class="ty">StripeException</span> ex) {
+    <span class="kw">await</span> _retryQueue.<span class="fn">EnqueueAsync</span>(orderId, ExponentialBackoff);
+    <span class="kw">await</span> _auditLog.<span class="fn">RecordAsync</span>(orderId, <span class="str">"deposit_failed"</span>, ex.Message);
+    <span class="kw">throw</span>;
+  }
+}</span></div>
+      </div>
+    </div>
+
+    <!-- INVENTORY -->
+    <div class="page" id="page-inventory">
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Product Catalog</div><div class="card-sub">Configurable settings, metal types, center stone specs</div></div><button class="btn btn-gold btn-sm">+ Add Style</button></div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>SKU</th><th>Style</th><th>Metal</th><th>Setting</th><th>Center Stone</th><th>Price Range</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:'JetBrains Mono',monospace;font-size:12px">FDR-SOL-01</td><td>Classic Solitaire</td><td>14k / 18k / Plat.</td><td>4-prong, 6-prong</td><td>Round 0.5–3ct</td><td>$2,800–$28k</td><td><span class="chip chip-green">Active</span></td></tr>
+              <tr><td style="font-family:'JetBrains Mono',monospace;font-size:12px">FDR-PAV-03</td><td>Pavé Band</td><td>14k / 18k</td><td>Shared prong pavé</td><td>Round / Oval</td><td>$4,200–$18k</td><td><span class="chip chip-green">Active</span></td></tr>
+              <tr><td style="font-family:'JetBrains Mono',monospace;font-size:12px">FDR-HAL-07</td><td>Emerald Halo</td><td>Plat. / 18k W</td><td>Micro-pavé halo</td><td>Emerald 1–2.5ct</td><td>$6,500–$24k</td><td><span class="chip chip-green">Active</span></td></tr>
+              <tr><td style="font-family:'JetBrains Mono',monospace;font-size:12px">FDR-3ST-02</td><td>3-Stone Classic</td><td>18k / Plat.</td><td>Channel or bezel</td><td>Cushion 1.5–4ct</td><td>$9,000–$40k</td><td><span class="chip chip-green">Active</span></td></tr>
+              <tr><td style="font-family:'JetBrains Mono',monospace;font-size:12px">FDR-TEN-05</td><td>Tension Set</td><td>Plat. only</td><td>Tension</td><td>Round 0.7–2ct</td><td>$5,400–$22k</td><td><span class="chip chip-yellow">Low Stock</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Supplier Feed · Stuller</div><div class="card-sub">Last sync: 1h ago · 284 stones updated</div></div><button class="btn btn-ghost btn-sm" id="sync-btn">↺ Sync Now</button></div>
+        <div class="code-block"><span class="cm">// SupplierFeedJob.cs — resilient ingest with dead-letter queue</span>
+
+<span class="kw">public class</span> <span class="ty">StullerFeedJob</span> : <span class="ty">IScheduledJob</span> {
+  <span class="kw">public async</span> Task <span class="fn">RunAsync</span>() {
+    <span class="kw">var</span> feed = <span class="kw">await</span> _stuller.<span class="fn">FetchDiamondFeedAsync</span>();
+
+    <span class="kw">foreach</span> (<span class="kw">var</span> item <span class="kw">in</span> feed.Diamonds) {
+      <span class="kw">try</span> {
+        <span class="kw">await</span> _catalog.<span class="fn">UpsertDiamondAsync</span>(item); <span class="cm">// idempotent</span>
+        <span class="kw">await</span> _reservations.<span class="fn">CheckAndReleaseAsync</span>(item.GiaNumber);
+      } <span class="kw">catch</span> (<span class="ty">Exception</span> ex) {
+        <span class="cm">// partial failures go to dead-letter, not crash loop</span>
+        <span class="kw">await</span> _deadLetter.<span class="fn">EnqueueAsync</span>(item, ex);
+        _metrics.<span class="fn">Increment</span>(<span class="str">"feed.ingest.failed"</span>);
+      }
+    }
+  }
+}</span></div>
+      </div>
+    </div>
+
+    <!-- SHOWROOM -->
+    <div class="page" id="page-showroom">
+      <div class="alert-banner alert-green">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M2 8a6 6 0 1 0 12 0A6 6 0 0 0 2 8z" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 8l2 2 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Showroom channel is fully live — quote, reserve, and close orders in-person. All state synced to online.
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Active Showroom Quotes</div></div><button class="btn btn-gold btn-sm" id="new-quote-btn">+ New Quote</button></div>
+          <div class="list-row"><div style="flex:1"><div style="font-size:13px;font-weight:600">James K. — Oval Pavé</div><div style="font-size:12px;color:var(--text3)">FD-Q-044 · created in-store · sent via email</div></div><span class="chip chip-blue">Sent</span></div>
+          <div class="list-row"><div style="flex:1"><div style="font-size:13px;font-weight:600">Emma S. — 3-Stone Custom</div><div style="font-size:12px;color:var(--text3)">FD-Q-041 · awaiting stone selection</div></div><span class="chip chip-yellow">Pending</span></div>
+          <div class="list-row"><div style="flex:1"><div style="font-size:13px;font-weight:600">David W. — Tension Set</div><div style="font-size:12px;color:var(--text3)">FD-Q-038 · converted to order FD-9039</div></div><span class="chip chip-green">Converted</span></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Channel Attribution</div><div class="card-sub">Orders by origin</div></div></div>
+          <canvas id="channel-chart" height="130"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Online ↔ Showroom State Sync</div><div class="card-sub">Orders move channels without losing state</div></div></div>
+        <div class="code-block"><span class="cm">// OrderService.cs — channel-agnostic order state</span>
+
+<span class="kw">public class</span> <span class="ty">Order</span> {
+  <span class="kw">public</span> <span class="ty">Guid</span> Id { <span class="kw">get</span>; }
+  <span class="kw">public</span> <span class="ty">Channel</span> OriginChannel { <span class="kw">get</span>; } <span class="cm">// Online | Showroom</span>
+  <span class="kw">public</span> <span class="ty">Channel</span> CurrentChannel { <span class="kw">get</span>; <span class="kw">set</span>; } <span class="cm">// mutable</span>
+  <span class="kw">public</span> <span class="ty">IReadOnlyList</span>&lt;<span class="ty">OrderEvent</span>&gt; History { <span class="kw">get</span>; }
+
+  <span class="cm">// quote created in showroom → customer pays online</span>
+  <span class="cm">// → ring fitted back in showroom → state consistent</span>
+}</span></div>
+      </div>
+    </div>
+
+    <!-- MIGRATION -->
+    <div class="page" id="page-migration">
+      <div class="alert-banner alert-info">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 7v4M8 5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Phase 3 of 5 in progress — product catalog and active orders migrated. Payments and showroom workflows next.
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Migration Phases · Shopify → Custom Platform</div></div>
+        <div class="migration-track">
+          <div class="mig-phase done"><div class="mig-phase-num">Phase 1</div><div class="mig-phase-name">Data Audit</div><div class="mig-phase-status done">✓ Complete</div></div>
+          <div class="mig-phase done"><div class="mig-phase-num">Phase 2</div><div class="mig-phase-name">Catalog</div><div class="mig-phase-status done">✓ Complete</div></div>
+          <div class="mig-phase active"><div class="mig-phase-num">Phase 3</div><div class="mig-phase-name">Orders</div><div class="mig-phase-status active">▶ Active</div></div>
+          <div class="mig-phase pending"><div class="mig-phase-num">Phase 4</div><div class="mig-phase-name">Payments</div><div class="mig-phase-status pending">Pending</div></div>
+          <div class="mig-phase pending"><div class="mig-phase-num">Phase 5</div><div class="mig-phase-name">Cutover</div><div class="mig-phase-status pending">Pending</div></div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Phase 3 Progress</div><div class="card-sub">Active orders · dual-write validation</div></div></div>
+          <div style="margin-top:4px">
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:6px"><span>Orders migrated</span><span style="font-weight:600">1,842 / 2,104</span></div>
+            <div class="progress-bar" style="height:10px"><div class="progress-fill pf-gold" style="width:88%"></div></div>
+            <div style="margin-top:16px">
+              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:5px"><span>Validation passed</span><span>1,841</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:5px"><span>Discrepancies found</span><span style="color:var(--yellow)">1</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2)"><span>Rollback triggers set</span><span style="color:var(--green)">Active</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Dual-Write Strategy</div></div></div>
+          <div class="code-block" style="font-size:11px"><span class="cm">// Writes go to BOTH during migration</span>
+<span class="cm">// Reads come from new platform (validated)</span>
+
+<span class="kw">async</span> <span class="fn">WriteOrder</span>(order) {
+  <span class="kw">await</span> <span class="fn">Promise</span>.<span class="fn">all</span>([
+    newPlatform.<span class="fn">saveOrder</span>(order),
+    shopify.<span class="fn">updateOrder</span>(order)  <span class="cm">// shadow</span>
+  ]);
+  <span class="kw">await</span> validator.<span class="fn">assertEquivalent</span>(
+    order.id
+  ); <span class="cm">// alert on divergence</span>
+}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MONITORING -->
+    <div class="page" id="page-monitoring">
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-label">API P99</div>
+          <div class="kpi-value">84<span style="font-size:16px;font-weight:500;color:var(--text3)">ms</span></div>
+          <div class="kpi-delta up">↓ 12ms vs last week</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Error Rate</div>
+          <div class="kpi-value">0.04<span style="font-size:16px;font-weight:500;color:var(--text3)">%</span></div>
+          <div class="kpi-delta up">↓ 0.02%</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Queue Depth</div>
+          <div class="kpi-value">3</div>
+          <div class="kpi-delta" style="color:var(--text3)">1 retry pending</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Uptime</div>
+          <div class="kpi-value">99.97<span style="font-size:14px;font-weight:500;color:var(--text3)">%</span></div>
+          <div class="kpi-delta up">30-day rolling</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Transaction Integrity</div><div class="card-sub">Concurrent reservation conflict log</div></div></div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Time</th><th>Event</th><th>Diamond</th><th>Resolution</th><th>Audit</th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:'JetBrains Mono',monospace;font-size:11px">14:02:18</td><td>Concurrent reserve conflict</td><td>GIA-5247812</td><td><span class="chip chip-green">Serialized — first caller won</span></td><td><span class="chip chip-green">Logged</span></td></tr>
+              <tr><td style="font-family:'JetBrains Mono',monospace;font-size:11px">11:44:01</td><td>Payment retry success</td><td>—</td><td><span class="chip chip-green">FD-9021 deposit captured</span></td><td><span class="chip chip-green">Logged</span></td></tr>
+              <tr><td style="font-family:'JetBrains Mono',monospace;font-size:11px">09:12:55</td><td>Feed ingest partial fail</td><td>GIA-4491023</td><td><span class="chip chip-yellow">Dead-lettered · manual review</span></td><td><span class="chip chip-green">Logged</span></td></tr>
+              <tr><td style="font-family:'JetBrains Mono',monospace;font-size:11px">08:30:00</td><td>Reservation auto-expired</td><td>GIA-6120001</td><td><span class="chip chip-blue">Released — available again</span></td><td><span class="chip chip-green">Logged</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay hidden" id="modal-order">
+  <div class="modal">
+    <div class="modal-title">New Order</div>
+    <div class="form-row"><label class="form-label">Customer Name</label><input type="text" placeholder="Full name" /></div>
+    <div class="form-row"><label class="form-label">Ring Style</label><select><option>Classic Solitaire</option><option>Pavé Band</option><option>Emerald Halo</option><option>3-Stone Classic</option></select></div>
+    <div class="form-row"><label class="form-label">Diamond (GIA#)</label><input type="text" placeholder="GIA certificate number" /></div>
+    <div class="form-row"><label class="form-label">Channel</label><select><option>Online</option><option>Showroom</option></select></div>
+    <div class="form-row"><label class="form-label">Deposit Amount ($)</label><input type="text" placeholder="e.g. 2500" /></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px">
+      <button class="btn btn-ghost" id="modal-order-cancel">Cancel</button>
+      <button class="btn btn-gold" id="modal-order-submit">Create Order</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-quote">
+  <div class="modal">
+    <div class="modal-title">Custom Quote</div>
+    <div class="form-row"><label class="form-label">Customer</label><input type="text" placeholder="Name or email" /></div>
+    <div class="form-row"><label class="form-label">Style Notes</label><textarea placeholder="e.g. Oval solitaire, 1.5–2ct, platinum, no pavé…"></textarea></div>
+    <div class="form-row"><label class="form-label">Budget Range</label><select><option>$5,000–$10,000</option><option>$10,000–$20,000</option><option>$20,000+</option></select></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px">
+      <button class="btn btn-ghost" id="modal-quote-cancel">Cancel</button>
+      <button class="btn btn-gold" id="modal-quote-submit">Save Quote</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const pageLabels = {
+  dashboard: ['Operations Overview','US Eastern · Production'],
+  orders: ['Orders','Active · 38 orders'],
+  diamonds: ['Diamond Catalog','GIA certified · Live availability'],
+  payments: ['Payments','Deposits · balances · reconciliation'],
+  inventory: ['Inventory & Catalog','Configurable products · Supplier feeds'],
+  showroom: ['Showroom','In-person + online · unified state'],
+  migration: ['Shopify Migration','Phase 3 of 5 · Dual-write active'],
+  monitoring: ['Monitoring','Transaction integrity · Uptime · Audit']
+};
+
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => {
+    const p = el.dataset.page;
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+    document.getElementById('page-'+p).classList.add('active');
+    const [t,s] = pageLabels[p] || [p,''];
+    document.getElementById('page-title').textContent = t;
+    document.getElementById('page-sub').textContent = s;
+  });
+});
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+// Modals
+document.getElementById('order-btn').addEventListener('click',()=>document.getElementById('modal-order').classList.remove('hidden'));
+document.getElementById('modal-order-cancel').addEventListener('click',()=>document.getElementById('modal-order').classList.add('hidden'));
+document.getElementById('modal-order-submit').addEventListener('click',()=>{
+  document.getElementById('modal-order').classList.add('hidden');
+  document.getElementById('kpi-orders').textContent='39';
+  toast('Order FD-9042 created · Deposit link sent');
+});
+document.getElementById('quote-btn').addEventListener('click',()=>document.getElementById('modal-quote').classList.remove('hidden'));
+document.getElementById('modal-quote-cancel').addEventListener('click',()=>document.getElementById('modal-quote').classList.add('hidden'));
+document.getElementById('modal-quote-submit').addEventListener('click',()=>{
+  document.getElementById('modal-quote').classList.add('hidden');
+  toast('Quote FD-Q-045 saved · Emailed to customer');
+});
+const nqBtn = document.getElementById('new-quote-btn');
+if(nqBtn) nqBtn.addEventListener('click',()=>document.getElementById('modal-quote').classList.remove('hidden'));
+
+// Order lifecycle
+const lifecycles = {
+  'FD-9041': {sub:'Sarah M. · Oval 1.82ct', events:[
+    {dot:'td-green',icon:'✓',title:'Balance payment captured',sub:'$7,450 · Stripe pi_3Pvx…4c2A',time:'Today 14:02'},
+    {dot:'td-green',icon:'✓',title:'Shipped · FedEx',sub:'Tracking: 724900123456',time:'Today 11:00'},
+    {dot:'td-green',icon:'✓',title:'Quality check passed',sub:'Photos sent to customer',time:'Oct 3'},
+    {dot:'td-green',icon:'✓',title:'Production complete',sub:'Ring crafted · 14k White Gold',time:'Oct 1'},
+    {dot:'td-green',icon:'✓',title:'Deposit captured',sub:'$2,500 · Stripe pi_3PqA…7bXW',time:'Sep 28'},
+    {dot:'td-green',icon:'✓',title:'Diamond reserved',sub:'GIA-5247812 · 24h hold',time:'Sep 28'},
+  ]},
+  'FD-8997': {sub:'Alicia T. · Round 0.9ct', events:[
+    {dot:'td-red',icon:'!',title:'Deposit failed — retry scheduled',sub:'insufficient_funds · T+1h retry',time:'Today 12:15'},
+    {dot:'td-gold',icon:'💎',title:'Diamond reserved',sub:'GIA-9012774 · expires in 22h',time:'Today 10:44'},
+    {dot:'td-gray',icon:'○',title:'Awaiting deposit to confirm',sub:'$1,500 deposit link sent',time:'Today 10:41'},
+  ]},
+  'FD-9003': {sub:'Michael R. · Cushion 2.1ct', events:[
+    {dot:'td-blue',icon:'⟳',title:'In production',sub:'Expected complete Oct 12',time:'Oct 4'},
+    {dot:'td-gold',icon:'✓',title:'Deposit captured — Showroom',sub:'$3,000 · in-person card',time:'Oct 4'},
+    {dot:'td-gold',icon:'💎',title:'Diamond selected in showroom',sub:'GIA-3318840 · reservation expiring',time:'Oct 4'},
+  ]},
+  'FD-9039': {sub:'James K. · Round Pavé 1.2ct', events:[
+    {dot:'td-blue',icon:'⟳',title:'In production',sub:'Pavé setting underway',time:'Oct 3'},
+    {dot:'td-green',icon:'✓',title:'Deposit captured',sub:'$2,000 · Quote FD-Q-038 converted',time:'Oct 2'},
+    {dot:'td-gold',icon:'📝',title:'Quote sent from showroom',sub:'FD-Q-038 · customer approved online',time:'Oct 1'},
+  ]},
+  'FD-9035': {sub:'Priya N. · Emerald Halo 1.5ct', events:[
+    {dot:'td-gold',icon:'⏳',title:'Awaiting deposit',sub:'$2,200 link sent · expires in 48h',time:'Today 09:00'},
+    {dot:'td-gray',icon:'○',title:'Design confirmed',sub:'Halo style approved, platinum',time:'Today 08:45'},
+  ]}
+};
+
+document.querySelectorAll('.view-order-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const id = btn.dataset.order;
+    const data = lifecycles[id];
+    if(!data) return;
+    const card = document.getElementById('order-lifecycle-card');
+    document.getElementById('lifecycle-title').textContent = id+' · Lifecycle';
+    document.getElementById('lifecycle-sub').textContent = data.sub;
+    const tl = document.getElementById('lifecycle-timeline');
+    tl.innerHTML = data.events.map(e=>`<div class="timeline-item">
+      <div class="timeline-dot ${e.dot}" style="width:24px;height:24px;font-size:11px">${e.icon}</div>
+      <div class="timeline-content">
+        <div class="timeline-title">${e.title}</div>
+        <div class="timeline-sub">${e.sub}</div>
+      </div>
+      <div class="timeline-time">${e.time}</div>
+    </div>`).join('');
+    card.style.display='block';
+    card.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+document.getElementById('close-lifecycle').addEventListener('click',()=>{
+  document.getElementById('order-lifecycle-card').style.display='none';
+});
+
+// Reserve diamond
+document.querySelectorAll('.reserve-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const id = btn.dataset.id;
+    const card = btn.closest('.diamond-card');
+    card.classList.add('reserved');
+    const status = card.querySelector('.diamond-status');
+    status.innerHTML = `<div class="timer-ring">⏱ <span class="countdown" data-mins="24">24:00</span></div>`;
+    btn.parentElement.innerHTML = `<span class="chip chip-yellow">Reserved — New Order</span>`;
+    toast('Diamond '+id+' reserved · 24h hold · idempotency key saved');
+  });
+});
+
+// Sync btn
+const syncBtn = document.getElementById('sync-btn');
+if(syncBtn) syncBtn.addEventListener('click',()=>{
+  syncBtn.textContent = '↺ Syncing…';
+  syncBtn.disabled = true;
+  setTimeout(()=>{syncBtn.textContent='↺ Sync Now';syncBtn.disabled=false;toast('Stuller feed synced · 291 stones updated');},2000);
+});
+
+// Countdown timers
+function updateCountdowns() {
+  document.querySelectorAll('.countdown').forEach(el=>{
+    let mins = parseFloat(el.dataset.mins);
+    if(mins <= 0) return;
+    mins -= 1/60;
+    if(mins < 0) mins = 0;
+    el.dataset.mins = mins;
+    const m = Math.floor(mins);
+    const s = Math.floor((mins - m)*60);
+    el.textContent = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  });
+}
+setInterval(updateCountdowns, 1000);
+
+// CANVAS CHARTS
+function drawLineChart(id, data, color, fillColor) {
+  const canvas = document.getElementById(id);
+  if(!canvas) return;
+  const dpr = window.devicePixelRatio||1;
+  const W = Math.max(200, canvas.parentElement.getBoundingClientRect().width - 40);
+  const H = 130;
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  canvas.style.width = W+'px'; canvas.style.height = H+'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  const pad = {t:8,r:8,b:26,l:48};
+  const cw = W-pad.l-pad.r, ch = H-pad.t-pad.b;
+  const max = Math.max(...data)*1.12, min = Math.min(...data)*0.85;
+  const pts = data.map((v,i)=>[pad.l+(i/(data.length-1))*cw, pad.t+(1-(v-min)/(max-min))*ch]);
+  const grad = ctx.createLinearGradient(0,pad.t,0,pad.t+ch);
+  grad.addColorStop(0,fillColor); grad.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0],pts[0][1]);
+  for(let i=1;i<pts.length;i++){const mx=(pts[i-1][0]+pts[i][0])/2;ctx.bezierCurveTo(mx,pts[i-1][1],mx,pts[i][1],pts[i][0],pts[i][1]);}
+  ctx.lineTo(pts[pts.length-1][0],pad.t+ch); ctx.lineTo(pts[0][0],pad.t+ch); ctx.closePath();
+  ctx.fillStyle=grad; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
+  for(let i=1;i<pts.length;i++){const mx=(pts[i-1][0]+pts[i][0])/2;ctx.bezierCurveTo(mx,pts[i-1][1],mx,pts[i][1],pts[i][0],pts[i][1]);}
+  ctx.strokeStyle=color; ctx.lineWidth=2; ctx.stroke();
+  const lbls=['Oct 22','Oct 25','Oct 28','Oct 31','Nov 3','Nov 5'];
+  ctx.fillStyle='rgba(168,159,147,0.8)'; ctx.font='10px Inter,system-ui,sans-serif'; ctx.textAlign='center';
+  const step=Math.floor((data.length-1)/(lbls.length-1));
+  lbls.forEach((l,i)=>{const x=pad.l+(i*step/(data.length-1))*cw; ctx.fillText(l,x,H-4);});
+  ctx.textAlign='right';
+  [min,(max+min)/2,max].forEach(v=>{
+    const y=pad.t+(1-(v-min)/(max-min))*ch;
+    ctx.fillText('$'+Math.round(v/1000)+'k',pad.l-4,y+4);
+  });
+}
+
+function drawDonut(id, slices) {
+  const canvas = document.getElementById(id);
+  if(!canvas) return;
+  const dpr = window.devicePixelRatio||1;
+  const W = Math.max(200, canvas.parentElement.getBoundingClientRect().width-40);
+  const H = 130;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  const cx=W/2-50, cy=H/2, r=48, ri=30;
+  let angle=-Math.PI/2;
+  slices.forEach(s=>{
+    const sweep=(s.pct/100)*Math.PI*2;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,angle,angle+sweep); ctx.closePath();
+    ctx.fillStyle=s.color; ctx.fill();
+    angle+=sweep;
+  });
+  ctx.beginPath(); ctx.arc(cx,cy,ri,0,Math.PI*2); ctx.fillStyle='var(--surface)'; ctx.fill();
+  ctx.fillStyle='var(--text)'; ctx.font='bold 14px Inter,system-ui,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('38',cx,cy+2); ctx.fillStyle='var(--text3)'; ctx.font='10px Inter,system-ui,sans-serif';
+  ctx.fillText('orders',cx,cy+14);
+  const legend=[{label:'Online',pct:'63%',color:'#3E6B9E'},{label:'Showroom',pct:'37%',color:'#C8A96A'}];
+  ctx.textAlign='left';
+  legend.forEach((l,i)=>{
+    const lx=cx+60, ly=cy-12+(i*22);
+    ctx.fillStyle=l.color; ctx.fillRect(lx,ly,10,10);
+    ctx.fillStyle='var(--text)'; ctx.font='12px Inter,system-ui,sans-serif'; ctx.fillText(l.label,lx+14,ly+9);
+    ctx.fillStyle='var(--text3)'; ctx.font='11px Inter,system-ui,sans-serif'; ctx.fillText(l.pct,lx+14,ly+21);
+  });
+}
+
+function gen(base,noise,n){let v=base,a=[];for(let i=0;i<n;i++){v+=(Math.random()-.4)*noise;v=Math.max(base*.5,Math.min(base*1.8,v));a.push(v);}return a;}
+const gmvData = gen(5800,1400,14);
+setTimeout(()=>{
+  drawLineChart('gmv-chart',gmvData,'#C8A96A','rgba(200,169,106,.18)');
+  drawDonut('channel-chart',[{pct:63,color:'#3E6B9E'},{pct:37,color:'#C8A96A'}]);
+},50);
+window.addEventListener('resize',()=>{
+  drawLineChart('gmv-chart',gmvData,'#C8A96A','rgba(200,169,106,.18)');
+  drawDonut('channel-chart',[{pct:63,color:'#3E6B9E'},{pct:37,color:'#C8A96A'}]);
+});
+</script>
+</body>
+</html>
